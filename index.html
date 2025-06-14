@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>No Porn Challenge</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-5 sm:p-10">
+
+  <div class="text-center mb-6">
+    <h1 class="text-2xl font-bold mb-2">30 Days - No Porn/Musturbate Challenge</h1>
+    <p id="progress-text" class="text-gray-700">Loading progress...</p>
+  </div>
+
+  <div id="card-container" class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-10"></div>
+
+  <div class="text-center mt-6">
+    <button onclick="resetProgress()" class="bg-red-600 text-white font-semibold px-6 py-2 rounded">
+      🔄 Reset All Progress
+    </button>
+  </div>
+
+  <script>
+    const challengeDays = [
+      { day: 1, tasks: ["Stay away from soft porn", "Do not watch Porn", "Do not masturbate."] },
+      { day: 2, tasks: ["Stay away from soft porn", "Do not watch Porn", "Do not masturbate."] },
+      { day: 3, tasks: ["Stay away from soft porn", "Do not watch Porn", "Do not masturbate."] },
+      { day: 4, tasks: ["Stay away from soft porn", "Do not watch Porn", "Do not masturbate."] },
+      { day: 5, tasks: ["Stay away from soft porn", "Do not watch Porn", "Do not masturbate."] },
+      { day: 6, tasks: ["Stay away from soft porn", "Do not watch Porn", "Do not masturbate."] },
+      { day: 7, tasks: ["Stay away from soft porn", "Do not watch Porn", "Do not masturbate."] },
+      { day: 8, tasks: ["Stay away from soft porn", "Do not watch Porn", "Do not masturbate."] },
+      { day: 9, tasks: ["Stay away from soft porn", "Do not watch Porn", "Do not masturbate."] },
+      { day: 10, tasks: ["Stay away from soft porn", "Do not watch Porn", "Do not masturbate."] },
+      { day: 11, tasks: ["Stay away from soft porn", "Do not watch Porn", "Do not masturbate."] },
+      { day: 12, tasks: ["Stay away from soft porn", "Do not watch Porn", "Do not masturbate."] },
+      { day: 13, tasks: ["Stay away from soft porn", "Do not watch Porn", "Do not masturbate."] },
+      { day: 14, tasks: ["Stay away from soft porn", "Do not watch Porn", "Do not masturbate."] },
+      { day: 15, tasks: ["Stay away from soft porn", "Do not watch Porn", "Do not masturbate."] },
+      { day: 16, tasks: ["Stay away from soft porn", "Do not watch Porn", "Do not masturbate."] },
+      { day: 17, tasks: ["Stay away from soft porn", "Do not watch Porn", "Do not masturbate."] },
+      { day: 18, tasks: ["Stay away from soft porn", "Do not watch Porn", "Do not masturbate."] },
+      { day: 19, tasks: ["Stay away from soft porn", "Do not watch Porn", "Do not masturbate."] },
+      { day: 20, tasks: ["Stay away from soft porn", "Do not watch Porn", "Do not masturbate."] },
+      { day: 21, tasks: ["Stay away from soft porn", "Do not watch Porn", "Do not masturbate."] },
+      { day: 22, tasks: ["Stay away from soft porn", "Do not watch Porn", "Do not masturbate."] },
+      { day: 23, tasks: ["Stay away from soft porn", "Do not watch Porn", "Do not masturbate."] },
+      { day: 24, tasks: ["Stay away from soft porn", "Do not watch Porn", "Do not masturbate."] },
+      { day: 25, tasks: ["Stay away from soft porn", "Do not watch Porn", "Do not masturbate."] },
+      { day: 26, tasks: ["Stay away from soft porn", "Do not watch Porn", "Do not masturbate."] },
+      { day: 27, tasks: ["Stay away from soft porn", "Do not watch Porn", "Do not masturbate."] },
+      { day: 28, tasks: ["Stay away from soft porn", "Do not watch Porn", "Do not masturbate."] },
+      { day: 29, tasks: ["Stay away from soft porn", "Do not watch Porn", "Do not masturbate."] },
+      { day: 30, tasks: ["Stay away from soft porn", "Do not watch Porn", "Do not masturbate."] },
+      
+    ];
+
+    const challengeStartDate = new Date(); // challenge starts today
+
+    function generateCards() {
+      const container = document.getElementById("card-container");
+      let completedCount = 0;
+
+      challengeDays.forEach((challenge, index) => {
+        const cardId = index + 1;
+        const today = new Date();
+        const challengeDate = new Date(challengeStartDate);
+        challengeDate.setDate(challengeStartDate.getDate() + index);
+
+        // Normalize time
+        today.setHours(0, 0, 0, 0);
+        challengeDate.setHours(0, 0, 0, 0);
+
+        const isToday = challengeDate.getTime() === today.getTime();
+        const isPast = challengeDate.getTime() < today.getTime();
+        const isLocked = !isToday && !isPast;
+
+        const completed = localStorage.getItem(`card-${cardId}-completed`) === "true";
+        if (completed) completedCount++;
+
+        // Render task checkboxes
+        let tasksHTML = "";
+        challenge.tasks.forEach((task, taskIndex) => {
+          const taskKey = `card-${cardId}-task-${taskIndex}`;
+          const taskDone = localStorage.getItem(taskKey) === "true";
+          tasksHTML += `
+            <div class="mb-2">
+              <label class="flex items-center gap-2 text-sm sm:text-base">
+                <input type="checkbox" onchange="saveTask(${cardId}, ${taskIndex})"
+                  id="${taskKey}" ${taskDone ? "checked" : ""} ${isLocked || completed ? "disabled" : ""} />
+                <span>${task}</span>
+              </label>
+            </div>`;
+        });
+
+        const cardHTML = `
+          <div id="card-${cardId}" class="bg-white py-6 px-5 shadow-lg rounded transition-all duration-300 relative">
+            <h1 class="text-center mb-2 text-xl sm:text-2xl font-bold">Day ${challenge.day}</h1>
+            <p class="text-center text-sm text-gray-500 mb-4">${challengeDate.toDateString()}</p>
+
+            <div class="mb-4">${tasksHTML}</div>
+
+            ${isLocked ? `
+              <div class="text-center text-gray-500 text-sm">🔒 Available on: ${challengeDate.toDateString()}</div>
+            ` : completed ? `
+              <div class="text-green-600 text-center font-semibold">✅ Mission Completed</div>
+            ` : `
+              <input id="input-${cardId}" class="border border-gray-600 p-2 rounded mb-2 w-full" type="password" placeholder="Secret Key">
+              <button onclick="checkMission(${cardId})" class="font-semibold bg-purple-700 px-4 py-2 rounded text-white w-full">Submit</button>
+              <p id="error-${cardId}" class="text-red-600 mt-2 hidden">Wrong secret key!</p>
+              ${isToday ? `<p id="timer-${cardId}" class="text-center text-xs text-gray-500 mt-2"></p>` : ""}
+            `}
+          </div>
+        `;
+
+        container.innerHTML += cardHTML;
+
+        // Style completed
+        if (completed) {
+          setTimeout(() => {
+            const card = document.getElementById(`card-${cardId}`);
+            card.classList.remove("bg-white");
+            card.classList.add("bg-green-100", "border", "border-green-500");
+          }, 0);
+        }
+
+        // Add timer for today
+        if (isToday && !completed) {
+          startCountdown(`timer-${cardId}`);
+        }
+      });
+
+      document.getElementById("progress-text").innerText = `✅ ${completedCount} of ${challengeDays.length} days completed`;
+    }
+
+    function checkMission(cardId) {
+      const input = document.getElementById(`input-${cardId}`);
+      const card = document.getElementById(`card-${cardId}`);
+      const error = document.getElementById(`error-${cardId}`);
+      const secretKey = input.value.trim();
+
+      if (secretKey === "999") {
+        localStorage.setItem(`card-${cardId}-completed`, "true");
+        document.getElementById(`card-${cardId}`).classList.add("bg-green-100", "border", "border-green-500");
+        input.remove();
+        error.classList.add("hidden");
+
+        // Optional: disable checkboxes
+        const inputs = card.querySelectorAll("input[type='checkbox']");
+        inputs.forEach(el => el.disabled = true);
+
+        card.querySelector("button").remove();
+        const done = document.createElement("div");
+        done.className = "text-green-600 text-center font-semibold mt-2";
+        done.innerText = "✅ Mission Completed";
+        card.appendChild(done);
+
+        updateProgressText();
+      } else {
+        error.classList.remove("hidden");
+      }
+    }
+
+    function saveTask(cardId, taskIndex) {
+      const taskKey = `card-${cardId}-task-${taskIndex}`;
+      const checkbox = document.getElementById(taskKey);
+      localStorage.setItem(taskKey, checkbox.checked ? "true" : "false");
+    }
+
+    function updateProgressText() {
+      let count = 0;
+      challengeDays.forEach((_, i) => {
+        if (localStorage.getItem(`card-${i + 1}-completed`) === "true") count++;
+      });
+      document.getElementById("progress-text").innerText = `✅ ${count} of ${challengeDays.length} days completed`;
+    }
+
+    function startCountdown(timerId) {
+      const endTime = new Date();
+      endTime.setHours(23, 59, 59, 999); // end of day
+
+      function update() {
+        const now = new Date();
+        const diff = endTime - now;
+
+        if (diff <= 0) {
+          document.getElementById(timerId).innerText = "⏰ Time’s up!";
+          return;
+        }
+
+        const hours = Math.floor(diff / 1000 / 60 / 60);
+        const minutes = Math.floor((diff / 1000 / 60) % 60);
+        const seconds = Math.floor((diff / 1000) % 60);
+
+        document.getElementById(timerId).innerText = `⏳ Time left today: ${hours}h ${minutes}m ${seconds}s`;
+        setTimeout(update, 1000);
+      }
+
+      update();
+    }
+
+    function resetProgress() {
+      if (confirm("Are you sure you want to reset all progress?")) {
+        Object.keys(localStorage).forEach(key => {
+          if (key.startsWith("card-")) localStorage.removeItem(key);
+        });
+        location.reload();
+      }
+    }
+
+    generateCards();
+  </script>
+</body>
+</html>
